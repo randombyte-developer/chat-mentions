@@ -11,6 +11,8 @@ import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.message.MessageChannelEvent
 import org.spongepowered.api.plugin.Plugin
+import org.spongepowered.api.text.Text
+import org.spongepowered.api.text.serializer.TextSerializers
 
 @Plugin(id = ChatMentions.ID, name = ChatMentions.NAME, version = ChatMentions.VERSION, authors = arrayOf(ChatMentions.AUTHOR))
 class ChatMentions @Inject constructor(
@@ -35,14 +37,30 @@ class ChatMentions @Inject constructor(
 
     @Listener
     fun onChat(event: MessageChannelEvent.Chat) {
-        val mentionRegex = (configManager.get().symbol + MINECRAFT_PLAYER_NAME_REGEX).toRegex()
-        mentionRegex.findAll(event.rawMessage.toPlain())
-                .filter { it.groupValues[1].isNotEmpty() }
-                .forEach { mentionResult ->
-                    val playerName = mentionResult.groupValues[1]
-                    Sponge.getServer().getPlayer(playerName).ifPresent { player ->
-                        // TODO
+        event.formatter.setBody(correctPlayerNames(event.rawMessage))
+    }
+
+    /**
+     * Makes sure the playernames are capitalized correctly, e.g. "kitcrAfty" -> "KitCrafty".
+     * Side-effect: Removes any styles of the text(like color).
+     */
+    fun correctPlayerNames(text: Text): Text {
+        val symbol = configManager.get().symbol
+        val words = TextSerializers.FORMATTING_CODE.serialize(text).split(" ")
+        val newWords = words.map { word ->
+            if (word.startsWith(symbol)) {
+                val playerName = word.split(symbol)[1]
+                if (playerName.isNotEmpty()) {
+                    val optPlayer = Sponge.getServer().getPlayer(playerName)
+                    if (optPlayer.isPresent) {
+                        return@map symbol + optPlayer.get().name
                     }
                 }
+            }
+
+            return@map word
+        }.joinToString(separator = " ")
+
+        return Text.of(newWords)
     }
 }
