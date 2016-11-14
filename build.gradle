@@ -35,5 +35,6 @@ shadowJar {
         include dependency("com.github.randombyte-developer:kosp")
     }
 
-    relocate "de.randombyte.kosp", "de.randombyte.kosptest"
+    relocate "kotlin", "de.randombyte.chatmentions.internal.kotlin"
+    relocate "de.randombyte.kosp", "de.randombyte.chatmentions.internal.kosp"
 }
