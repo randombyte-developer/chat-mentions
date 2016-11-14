@@ -30,9 +30,9 @@ dependencies {
 
 shadowJar {
     dependencies {
-        include dependency("org.jetbrains.kotlin:kotlin-runtime")
-        include dependency("org.jetbrains.kotlin:kotlin-stdlib")
-        include dependency("com.github.randombyte-developer:kosp")
+        include dependency(":kotlin-runtime")
+        include dependency(":kotlin-stdlib")
+        include dependency(":kosp")
     }
 
     relocate "kotlin", "de.randombyte.chatmentions.internal.kotlin"
