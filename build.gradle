@@ -39,4 +39,6 @@ shadowJar {
 
     relocate "kotlin", "de.randombyte.chatmentions.internal.kotlin"
     relocate "de.randombyte.kosp", "de.randombyte.chatmentions.internal.kosp"
+
+    classifier = null // Remove '-all' suffix
 }
